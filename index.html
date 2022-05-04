@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D3 Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <style>
+    .domain {
+      color: white;
+    }
+    .tick {
+      color: white;
+      font: normal 14px "Arvo";
+      fill: none;
+    }
+    .tick line {
+        stroke: #fff;
+        shape-rendering: crispEdges;
+        stroke-width: 2px;
+    }
+    .tick text {
+        transform: translateY(8px);
+    }
+    .tick:first-of-type {
+      transform: translateX(10px)
+    }
+
+    .x-axis {
+      border: 2px solid white;
+    }
+
+    .domain {
+        fill: none;
+        stroke: #fff;
+        shape-rendering: crispEdges;
+        stroke-width: 4px;
+    }
+    .container {
+        box-shadow: 2px 2px 16px rgba(0,0,0,.8);
+        background-color: black;
+    }
+  </style>
+
+</head>
+<body>
+  </div>
+  <div style="left: 0; top: 0%;margin: 0; padding: 0;width: 100%; height: 100%; position: absolute;" class="zoomable"></div>
+
+  <script>
+
+    /*  
+    
+    Ideas: 
+        - add major events 
+        - set a timescale
+        - look at more interactive graqphic exdamples (information is beautiful)
+        - truth and beauty from the WHO 
+        - 
+     */
+
+    var margin = {top: 0, right: 0, bottom: 0, left: 0},
+    width = 600 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+    let rectAmount = 0;
+    let zoomAmount = 1;
+
+    function findBiggestRect() {
+        let max = 0;
+        for (const key in data) {
+            if (data[key] > max) { max = data[key] }
+        }
+        return Math.sqrt(max)
+    }
+
+    function getRandomColor() {
+      const colors = ["#ffffff", "#03071e", "#6a040f", "#d00000", ]
+      colors.reverse()
+      toReturn = colors[rectAmount]
+      rectAmount++
+      return toReturn
+    }
+
+    function createRectangle(rWidth, rHeight, label) {
+      group.append('rect')
+      .attr("width", rWidth)
+        .attr("height", rHeight)
+        .style("fill", getRandomColor())
+      group.append('text')
+        .attr("fill", "white")
+        .text(label)
+        .attr("x", rWidth/2)
+        .attr("y", rWidth/2)
+        .attr("dy", ".35em")
+        .style("font-size", rWidth / 26)
+        .style("font-family", "Arvo")
+        .style("font-style", "italic")
+        .style("max-width", "300px")
+
+    }
+
+    function createRightJustifiedRectangle(rWidth, rHeight, label) {
+      group.append('rect')
+        .attr("width", rWidth)
+        .attr("height", rHeight)
+        .attr("x", findBiggestRect() - rWidth + 10)
+        .attr("y", findBiggestRect() - rHeight + 10)
+        .style("fill", getRandomColor())
+      group.append('text')
+        .attr("fill", "black")
+        .text(label)
+        .attr("x", findBiggestRect() - rWidth/2)
+        .attr("y", findBiggestRect() - rHeight/2)
+        .attr("dy", ".35em")
+        .style("font-size", rWidth / 26)
+        .style("font-family", "Arvo")
+    }
+
+    const data = {
+      medianNetWorth: 121760,
+      bottom25NetWorth: 12430,
+      elonMustNetWorth: 265600000000,
+    }
+
+    const x = d3.scaleLinear()
+      .domain([0, width])         // This is what is written on the Axis: from 0 to 100
+      .range([0, width]);       // This is where the axis is placed: from 100px to 800px
+
+    const svg = d3.select(".zoomable")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("class", "container")
+        .attr("style", "outline: 2px solid black; position: absolute; left: 50px; top: 50px;") 
+    
+
+    const group = svg.append("g")
+      .attr("x", "0")
+      .attr("y", "0")
+      .attr("class", "mainGroup")
+      .attr("height", '100%')
+      .call(
+        d3.zoom()
+          .on("zoom", zoomed)
+          .scaleExtent([0.0010, 6])
+      )
+      
+    const xAxis = 
+    d3
+        .axisBottom(x)
+          .tickFormat(d => {
+            let outputString = `$${d*d}`
+            if (d.toString().length >= 3) {
+              outputString = `$${d*d/1000}k`
+            }
+            if (d.toString().length >= 5) {
+              outputString = `$${d*d/1000000}M`
+            }
+            if (d.toString().length >= 6) {
+              outputString = `$${d*d/1000000000}B`
+            }
+            return outputString
+          })
+          .tickSize(10)
+          .ticks(6)
+
+    function zoomed({transform}) {
+      x
+        .domain([0, 1/transform.k * width])
+        group.attr("transform", `scale(${transform.k})`)
+        svg.call(
+            xAxis
+        )
+        zoomIndicator
+            .text(`${transform.k.toFixed(3)}x`)
+    }
+    
+
+    createRectangle(Math.sqrt(data.elonMustNetWorth), Math.sqrt(data.elonMustNetWorth), "Elon Musks's Net Worth")
+    createRectangle(Math.sqrt(data.medianNetWorth), Math.sqrt(data.medianNetWorth), "The Median Net Worth in the USA")
+    createRectangle(Math.sqrt(data.bottom25NetWorth), Math.sqrt(data.bottom25NetWorth), "The Bottom 25th Percentile of Net Worth in the USA")
+
+    // createRightJustifiedRectangle(150000, 150000, "This is a test")
+
+    const zoomIndicator = svg.append("text")
+      .attr("fill", "white")
+      .text("1.000x")
+      .style("text-align", "left")
+      .attr("x", "80px")
+      .attr("y", `${height - 44}`)
+      .attr("dy", ".35em")
+      .style("font-size", width/26)
+
+    svg.call(
+      xAxis
+    )
+    
+  </script>
+
+</body>
+</html>
