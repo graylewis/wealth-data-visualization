@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://d3js.org/d3.v7.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
     .domain {
       color: white;
@@ -49,10 +49,51 @@
 
 </head>
 <body>
+  <div style="left: 0; top: 50px;margin: 0; padding: 0;width: 100%; height: 100%; position: absolute;" class="zoomable"></div>
+  <div class="sliderText"></div>
+  <div class="slidecontainer">
+    <input type="range" min="1989" max="2021"   class="slider" id="myRange">
   </div>
-  <div style="left: 0; top: 0%;margin: 0; padding: 0;width: 100%; height: 100%; position: absolute;" class="zoomable"></div>
+  <script src="./newData.js"></script>
 
   <script>
+    const quarterIndex = {
+      "Q1": new Date("31 March"),
+      "Q2": new Date("30 June"),
+      "Q3": new Date("30 September"),
+      "Q4": new Date("31 December"),
+    }
+    const topOne = rawData.topOne
+    const median = rawData.median
+
+    const slider = document.querySelector('#myRange');
+
+    let data = {
+      medianNetWorth: 121760,
+      bottom25NetWorth: 12430,
+      elonMustNetWorth: 265600000000,
+    }
+  
+    const filterData = (toFilter) => {
+      return toFilter.filter((item, i) => {
+        return (item["Year"] == slider.value)
+      })
+    }
+
+    function updateData() {
+      const filteredTopOne = filterData(topOne)
+      const filteredMedian = filterData(median)
+      data.top1NetWorth = filteredTopOne[0]["Net worth"]
+      data.medianNetWorth = filteredMedian[0]["Net worth"]
+      
+      reDraw()
+      output = document.querySelector(".sliderText");
+      output.innerText = this.value
+    } 
+  
+
+
+    slider.oninput = updateData
 
     /*  
     
@@ -63,7 +104,7 @@
         - truth and beauty from the WHO 
         - 
      */
-
+    
     var margin = {top: 0, right: 0, bottom: 0, left: 0},
     width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
@@ -79,19 +120,29 @@
     }
 
     function getRandomColor() {
-      const colors = ["#ffffff", "#03071e", "#6a040f", "#d00000", ]
+      /*
+      const colors = ["#41073e","#03071e", "#6a040f", "#d00000", ]
       colors.reverse()
       toReturn = colors[rectAmount]
       rectAmount++
-      return toReturn
+      */
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+      //return toReturn
     }
 
     function createRectangle(rWidth, rHeight, label) {
       group.append('rect')
+      .attr("class", "chart-rect")
       .attr("width", rWidth)
         .attr("height", rHeight)
         .style("fill", getRandomColor())
       group.append('text')
+        .attr("class", "chart-text")
         .attr("fill", "white")
         .text(label)
         .attr("x", rWidth/2)
@@ -121,11 +172,6 @@
         .style("font-family", "Arvo")
     }
 
-    const data = {
-      medianNetWorth: 121760,
-      bottom25NetWorth: 12430,
-      elonMustNetWorth: 265600000000,
-    }
 
     const x = d3.scaleLinear()
       .domain([0, width])         // This is what is written on the Axis: from 0 to 100
@@ -137,18 +183,18 @@
         .attr("height", height + margin.top + margin.bottom)
         .attr("class", "container")
         .attr("style", "outline: 2px solid black; position: absolute; left: 50px; top: 50px;") 
-    
+        .call(
+        d3.zoom()
+          .on("zoom", zoomed)
+          .scaleExtent([0.0010, 6])
+      )
 
     const group = svg.append("g")
       .attr("x", "0")
       .attr("y", "0")
       .attr("class", "mainGroup")
       .attr("height", '100%')
-      .call(
-        d3.zoom()
-          .on("zoom", zoomed)
-          .scaleExtent([0.0010, 6])
-      )
+
       
     const xAxis = 
     d3
@@ -179,13 +225,24 @@
         zoomIndicator
             .text(`${transform.k.toFixed(3)}x`)
     }
+
+    // ???
+    function walkthrough() {
+      const interpolator = d3.interpolateZoom([0,0,1000], [0,0,10000])
+      svg.call(interpolator)
+    }
+
+    function reDraw() {
+      svg.selectAll('.chart-rect').remove();
+      svg.selectAll('.chart-text').remove();
+      createRectangle(Math.sqrt(data.elonMustNetWorth), Math.sqrt(data.elonMustNetWorth), "Elon Musks's Net Worth")
+      createRectangle(Math.sqrt(data.top1NetWorth), Math.sqrt(data.top1NetWorth), "The Top 1 Percentile of Net Worth in the USA")
+      createRectangle(Math.sqrt(data.medianNetWorth), Math.sqrt(data.medianNetWorth), "The Median Net Worth in the USA")
+      createRectangle(Math.sqrt(data.bottom25NetWorth), Math.sqrt(data.bottom25NetWorth), "The Bottom 25th % of Net Worth in the USA (2021)")
+      // createRightJustifiedRectangle(150000, 150000, "This is a test")
+    }
     
-
-    createRectangle(Math.sqrt(data.elonMustNetWorth), Math.sqrt(data.elonMustNetWorth), "Elon Musks's Net Worth")
-    createRectangle(Math.sqrt(data.medianNetWorth), Math.sqrt(data.medianNetWorth), "The Median Net Worth in the USA")
-    createRectangle(Math.sqrt(data.bottom25NetWorth), Math.sqrt(data.bottom25NetWorth), "The Bottom 25th Percentile of Net Worth in the USA")
-
-    // createRightJustifiedRectangle(150000, 150000, "This is a test")
+    updateData()
 
     const zoomIndicator = svg.append("text")
       .attr("fill", "white")
