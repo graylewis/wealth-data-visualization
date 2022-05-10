@@ -24,7 +24,7 @@
         shape-rendering: crispEdges;
         stroke-width: 2px;
     }
-    .tick text {
+    .tick text {  
         transform: translateY(8px);
     }
     .tick:first-of-type {
@@ -45,6 +45,10 @@
         box-shadow: 2px 2px 16px rgba(0,0,0,.8);
         background-color: black;
     }
+
+    .slider {
+      width: 400px;
+    }
   </style>
 
 </head>
@@ -52,48 +56,40 @@
   <div style="left: 0; top: 50px;margin: 0; padding: 0;width: 100%; height: 100%; position: absolute;" class="zoomable"></div>
   <div class="sliderText"></div>
   <div class="slidecontainer">
-    <input type="range" min="1989" max="2021"   class="slider" id="myRange">
+    <input type="range" min="1989" max="2021" step="1" class="slider" id="myRange">
   </div>
-  <script src="./newData.js"></script>
+  <script src="./incomeData.js"></script>
 
   <script>
-    const quarterIndex = {
-      "Q1": new Date("31 March"),
-      "Q2": new Date("30 June"),
-      "Q3": new Date("30 September"),
-      "Q4": new Date("31 December"),
-    }
-    const topOne = rawData.topOne
-    const median = rawData.median
 
     const slider = document.querySelector('#myRange');
 
-    let data = {
-      medianNetWorth: 121760,
-      bottom25NetWorth: 12430,
-      elonMustNetWorth: 265600000000,
-    }
+    let data = {}
   
-    const filterData = (toFilter) => {
+    const filterData = (toFilter, year) => {
       return toFilter.filter((item, i) => {
-        return (item["Year"] == slider.value)
+        return (item["Year"] == year)
       })
     }
 
-    function updateData() {
-      const filteredTopOne = filterData(topOne)
-      const filteredMedian = filterData(median)
-      data.top1NetWorth = filteredTopOne[0]["Net worth"]
-      data.medianNetWorth = filteredMedian[0]["Net worth"]
-      
-      reDraw()
-      output = document.querySelector(".sliderText");
-      output.innerText = this.value
+    function updateData(year) {
+      filteredData = filterData(incomeData, year) 
+
+      if (filteredData.length > 0) {
+        data.top40 = filteredData[0]["Top40"]
+        data.top20 = filteredData[0]["Top20"]
+        data.top5 = filteredData[0]["Top5"]
+        data.bottom20 = filteredData[0]["Bottom20"]
+        data.top1 = filteredData[0]["Top1"]
+        data.topPoint1 = filteredData[0]["TopPoint1"]
+        
+        reDraw()
+        output = document.querySelector(".sliderText");
+        output.innerText = year
+      }
     } 
-  
 
-
-    slider.oninput = updateData
+    slider.oninput = function() {updateData(this.value)}
 
     /*  
     
@@ -135,18 +131,18 @@
       //return toReturn
     }
 
-    function createRectangle(rWidth, rHeight, label) {
+    function createRectangle(rWidth, rHeight, label, color) {
       group.append('rect')
       .attr("class", "chart-rect")
       .attr("width", rWidth)
         .attr("height", rHeight)
-        .style("fill", getRandomColor())
+        .style("fill", color)
       group.append('text')
         .attr("class", "chart-text")
         .attr("fill", "white")
         .text(label)
         .attr("x", rWidth/2)
-        .attr("y", rWidth/2)
+        .attr("y", 3*rHeight/4)
         .attr("dy", ".35em")
         .style("font-size", rWidth / 26)
         .style("font-family", "Arvo")
@@ -198,22 +194,22 @@
       
     const xAxis = 
     d3
-        .axisBottom(x)
-          .tickFormat(d => {
-            let outputString = `$${d*d}`
-            if (d.toString().length >= 3) {
-              outputString = `$${d*d/1000}k`
-            }
-            if (d.toString().length >= 5) {
-              outputString = `$${d*d/1000000}M`
-            }
-            if (d.toString().length >= 6) {
-              outputString = `$${d*d/1000000000}B`
-            }
-            return outputString
-          })
-          .tickSize(10)
-          .ticks(6)
+      .axisBottom(x)
+        .tickFormat(d => {
+          let outputString = `$${d*d}`
+          if (d.toString().length >= 3) {
+            outputString = `$${d*d/1000}k`
+          }
+          if (d.toString().length >= 5) {
+            outputString = `$${d*d/1000000}M`
+          }
+          if (d.toString().length >= 6) {
+            outputString = `$${d*d/1000000000}B`
+          }
+          return outputString
+        })
+        .tickSize(10)
+        .ticks(6)
 
     function zoomed({transform}) {
       x
@@ -235,14 +231,14 @@
     function reDraw() {
       svg.selectAll('.chart-rect').remove();
       svg.selectAll('.chart-text').remove();
-      createRectangle(Math.sqrt(data.elonMustNetWorth), Math.sqrt(data.elonMustNetWorth), "Elon Musks's Net Worth")
-      createRectangle(Math.sqrt(data.top1NetWorth), Math.sqrt(data.top1NetWorth), "The Top 1 Percentile of Net Worth in the USA")
-      createRectangle(Math.sqrt(data.medianNetWorth), Math.sqrt(data.medianNetWorth), "The Median Net Worth in the USA")
-      createRectangle(Math.sqrt(data.bottom25NetWorth), Math.sqrt(data.bottom25NetWorth), "The Bottom 25th % of Net Worth in the USA (2021)")
+      createRectangle(Math.sqrt(265400000000), Math.sqrt(265400000000), "Elon Musk's Net Worth in 2022", "#4895ef")
+      createRectangle(Math.sqrt(data.topPoint1), Math.sqrt(data.topPoint1), "The Average Income of the Top .1%", "#3f37c9")
+      createRectangle(Math.sqrt(data.top1), Math.sqrt(data.top1), "The Average Income of the Top 1%", "#480ca8")
+      createRectangle(Math.sqrt(data.bottom20), Math.sqrt(data.bottom20), "The Average Income of the Bottom 20%", "#f72585")
       // createRightJustifiedRectangle(150000, 150000, "This is a test")
     }
     
-    updateData()
+    updateData(2001)
 
     const zoomIndicator = svg.append("text")
       .attr("fill", "white")
