@@ -48,12 +48,6 @@
     .slider {
       width: 400px;
     }
-    
-    .chart-rect, .chart-text, .rect-label, .rect-label-text {
-      transition-duration: .5s;
-    }
-
-
   </style>
 
 </head>
@@ -66,7 +60,7 @@
   <script src="./incomeData.js"></script>
 
   <script>
-    const scaleFactor = 10000;
+
     const slider = document.querySelector('#myRange');
 
     let data = { elonMuskNetWorth: 265400000000 }
@@ -107,7 +101,7 @@
      */
     
     var margin = {top: 0, right: 0, bottom: 0, left: 0},
-    width = 1300 - margin.left - margin.right,
+    width = 600 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
     let rectAmount = 0;
     let zoomAmount = 1;
@@ -117,7 +111,7 @@
         for (const key in data) {
             if (data[key] > max) { max = data[key] }
         }
-        return max
+        return Math.sqrt(max)
     }
 
     function getRandomColor() {
@@ -137,50 +131,28 @@
     }
 
     function createRectangle(rWidth, rHeight, label, color) {
-      const numberOfRects = d3.selectAll('.chart-rect').size()
       group.append('rect')
-        .attr("class", "chart-rect")
-        .attr("width", rWidth)
+      .attr("class", "chart-rect")
+      .attr("width", rWidth)
         .attr("height", rHeight)
         .style("fill", color)
-      group.append('rect')
-        .attr("class", "rect-label")
-        .attr("width", "2px")
-        .attr("height", 20 + 12*numberOfRects)
-        .attr("y", rHeight)
-        .attr("data-width", rWidth)
-        .style("fill", color)
-      group.append('text')
-        .attr("class", "rect-label-text")
-        .attr("height", "30px")
-        .attr("y", rHeight+30 + 12*numberOfRects)
-        .attr("data-width", rWidth)
-        .style("fill", color)
-        .text(label)
-        .attr("text-anchor", "start")
-        .style("font-size", "11px")
-        .style("font-family", "Arvo")
-        .style("font-weight", "bold")
-
       group.append('text')
         .attr("class", "chart-text")
         .attr("fill", "white")
         .text(label)
-        .attr("x", 0)
-        .attr("y", rHeight/2)
-        .style("display", (rWidth/2 > 200) ? "block":"none")
+        .attr("x", rWidth/2)
+        .attr("y", 3*rHeight/4)
         .attr("dy", ".35em")
-        .style("font-size", "18px")
+        .style("font-size", rWidth / 26)
         .style("font-family", "Arvo")
         .style("font-style", "italic")
         .style("max-width", "300px")
-        .attr("data-width", rWidth)
 
     }
 
     function createRightJustifiedRectangle(rWidth, rHeight, label, color) {
       group.append('rect')
-        .attr("class", "chart-rect")
+      .attr("class", "chart-rect")
         .attr("width", rWidth)
         .attr("height", rHeight)
         .attr("x", findBiggestRect() - rWidth + 19)
@@ -211,7 +183,7 @@
         .call(
         d3.zoom()
           .on("zoom", zoomed)
-          .scaleExtent([.00001, 300])
+          .scaleExtent([0.0010, 6])
       )
 
     const group = svg.append("g")
@@ -225,44 +197,25 @@
     d3
       .axisBottom(x)
         .tickFormat(d => {
-          let outputString = `$${d*scaleFactor}`
+          let outputString = `$${d*d}`
+          if (d.toString().length >= 3) {
+            outputString = `$${d*d/1000}k`
+          }
           if (d.toString().length >= 5) {
-            outputString = `$${d/1000*scaleFactor}k`
+            outputString = `$${d*d/1000000}M`
           }
-          if (d.toString().length >= 7) {
-            outputString = `$${d/1000000*scaleFactor}M`
-          }
-          if (d.toString().length >= 8) {
-            outputString = `$${d/1000000000*scaleFactor}B`
+          if (d.toString().length >= 6) {
+            outputString = `$${d*d/1000000000}B`
           }
           return outputString
         })
         .tickSize(10)
         .ticks(6)
 
-
     function zoomed({transform}) {
       x
         .domain([0, 1/transform.k * width])
-        d3.selectAll('.chart-rect').attr("transform", `scale(${transform.k} 1)`)
-        d3.selectAll('.chart-text').each(function() {
-          const translateLeft = (d3.select(this).attr("data-width")*transform.k)/2
-          
-          if (translateLeft < 200) {
-            d3.select(this).style("display", "none")
-          } else {
-            if (d3.select(this).style("display") == "none") { d3.select(this).style("display", "block") }
-            d3.select(this).style("transform", `translateX(${translateLeft}px)`)
-          }
-        })
-        d3.selectAll('.rect-label').each(function() {
-          const translateLeft = (d3.select(this).attr("data-width")*transform.k)
-            d3.select(this).style("transform", `translateX(${translateLeft-2}px)`)
-        })
-        d3.selectAll('.rect-label-text').each(function() {
-          const translateLeft = (d3.select(this).attr("data-width")*transform.k)
-            d3.select(this).style("transform", `translateX(${translateLeft - 3}px)`)
-        })
+        group.attr("transform", `scale(${transform.k})`)
         svg.call(
             xAxis
         )
@@ -276,28 +229,18 @@
       const interval = setInterval(() => {if (slider.value == 2021) {clearInterval(interval)} else { console.log(`LOOP: ${slider.value + 1}`);slider.value = parseInt(slider.value) + 1; updateData(slider.value) }}, 400)
     }
 
-    function reDraw() {
-      let node, transform;
-      if (svg.select('.chart-rect').node()) {
-        node = svg.select('.chart-rect').node()
-        transform = d3.zoomTransform(node);
-      }
-     // console.log(svg.select('.chart-rect').node())
+    function reDraw() { 
       svg.selectAll('.chart-rect').remove();
       svg.selectAll('.chart-text').remove();
-      svg.selectAll('.rect-label').remove();
-      svg.selectAll('.rect-label-text').remove();
-      createRectangle(265400000000/scaleFactor,  300, "Elon Musk's Net Worth in 2022", "#4895ef")
-      createRectangle(data.topPoint1/scaleFactor,  300, "The Average Income of the Top .1%", "#3f37c9")
-      createRectangle(data.top1/scaleFactor,  300, "The Average Income of the Top 1%", "#480ca8")
-      createRectangle(data.bottom20/scaleFactor, 300, "The Average Income of the Bottom 20%", "#f72585")
-
-      if (transform) {
-        console.log(transform.k)
-        zoomed({transform})
-      }
+      createRectangle(Math.sqrt(265400000000), Math.sqrt(265400000000), "Elon Musk's Net Worth in 2022", "#4895ef")
+      createRectangle(Math.sqrt(data.topPoint1), Math.sqrt(data.topPoint1), "The Average Income of the Top .1%", "#3f37c9")
+      createRectangle(Math.sqrt(data.top1), Math.sqrt(data.top1), "The Average Income of the Top 1%", "#480ca8")
+      createRectangle(Math.sqrt(data.bottom20), Math.sqrt(data.bottom20), "The Average Income of the Bottom 20%", "#f72585")
+      // createRightJustifiedRectangle(150000, 150000, "This is a test")
     }
-  
+    
+    updateData(2001)
+
     const zoomIndicator = svg.append("text")
       .attr("fill", "white")
       .text("1.000x")
@@ -315,15 +258,9 @@
       createRightJustifiedRectangle(Math.sqrt(45000000000), Math.sqrt(45000000000), "Cost of solving world hunger", "#000000");
       console.log("Solved world hunger!")
     }
-  
-    createRectangle(265400000000/scaleFactor,  300, "Elon Musk's Net Worth in 2022", "#4895ef")
-    createRectangle(data.topPoint1/scaleFactor,  300, "The Average Income of the Top .1%", "#3f37c9")
-    createRectangle(data.top1/scaleFactor,  300, "The Average Income of the Top 1%", "#480ca8")
-    createRectangle(data.bottom20/scaleFactor, 300, "The Average Income of the Bottom 20%", "#f72585")
-    updateData(2001)
-
+    
   </script>
-  <input name="hunger" type="button" class="solve-hunger" value="How has it changed since 1989?" onclick=walkthrough()>
+  <input name="hunger" type="button" class="solve-hunger" value="Solve World Hunger" onclick=solveHunger()>
   </input>
 </body>
 </html>

@@ -77,7 +77,7 @@ const incomeData = [
     "Top1": 734426
   },
   {
-    "Year": "2013 (39)",
+    "Year": 2013,
     "Number": 123931,
     "Bottom20": 21000,
     "Bottom40": 41035,
@@ -110,7 +110,7 @@ const incomeData = [
     "Top1": 690280
   },
   {
-    "Year": "2010 (37)",
+    "Year": 2010,
     "Number": 119927,
     "Bottom20": 20000,
     "Bottom40": 38000,
@@ -121,7 +121,7 @@ const incomeData = [
     "Top1": 680909
   },
   {
-    "Year": "2009 (36)",
+    "Year": 2009,
     "Number": 117538,
     "Bottom20": 20453,
     "Bottom40": 38550,
@@ -176,7 +176,7 @@ const incomeData = [
     "Top1": 669930
   },
   {
-    "Year": "2004 (35)",
+    "Year": 2004,
     "Number": 113343,
     "Bottom20": 18486,
     "Bottom40": 34675,
@@ -220,7 +220,7 @@ const incomeData = [
     "Top1": 679726
   },
   {
-    "Year": "2000 (30)",
+    "Year": 2000,
     "Number": 108209,
     "Bottom20": 17920,
     "Bottom40": 33000,
@@ -231,7 +231,7 @@ const incomeData = [
     "Top1": 721976
   },
   {
-    "Year": "1999 (29)",
+    "Year": 1999,
     "Number": 106434,
     "Bottom20": 17136,
     "Bottom40": 31920,
@@ -264,7 +264,7 @@ const incomeData = [
     "Top1": 527990
   },
   {
-    "Year": "1995 (25)",
+    "Year": 1995,
     "Number": 99627,
     "Bottom20": 14400,
     "Bottom40": 26914,
@@ -275,7 +275,7 @@ const incomeData = [
     "Top1": 502006
   },
   {
-    "Year": "1994 (24)",
+    "Year": 1994,
     "Number": 98990,
     "Bottom20": 13426,
     "Bottom40": 25200,
@@ -286,7 +286,7 @@ const incomeData = [
     "Top1": 482070
   },
   {
-    "Year": "1993 (23)",
+    "Year": 1993,
     "Number": 97107,
     "Bottom20": 12967,
     "Bottom40": 24679,
@@ -297,7 +297,7 @@ const incomeData = [
     "Top1": 495353
   },
   {
-    "Year": "1992 (22)",
+    "Year": 1992,
     "Number": 96426,
     "Bottom20": 12600,
     "Bottom40": 24140,
@@ -352,7 +352,7 @@ const incomeData = [
     "Top1": 497667
   },
   {
-    "Year": "1987 (21)",
+    "Year": 1987,
     "Number": 91124,
     "Bottom20": 10800,
     "Bottom40": 20500,
@@ -374,7 +374,7 @@ const incomeData = [
     "Top1": 391253
   },
   {
-    "Year": "1985 (20)",
+    "Year": 1985,
     "Number": 88458,
     "Bottom20": 9941,
     "Bottom40": 18704,
@@ -385,7 +385,7 @@ const incomeData = [
     "Top1": 362737
   },
   {
-    "Year": "1984 (19)",
+    "Year": 1984,
     "Number": 86789,
     "Bottom20": 9500,
     "Bottom40": 17780,
@@ -429,7 +429,7 @@ const incomeData = [
     "Top1": 304081
   },
   {
-    "Year": "1979 (18)",
+    "Year": 1979,
     "Number": 80776,
     "Bottom20": 7000,
     "Bottom40": 13000,
@@ -462,7 +462,7 @@ const incomeData = [
     "Top1": 302127
   },
   {
-    "Year": "1976 (17)",
+    "Year": 1976,
     "Number": 74142,
     "Bottom20": 5405,
     "Bottom40": 10070,
@@ -473,7 +473,7 @@ const incomeData = [
     "Top1": 293493
   },
   {
-    "Year": "1975 (16)",
+    "Year": 1975,
     "Number": 72867,
     "Bottom20": 5000,
     "Bottom40": 9384,
@@ -484,7 +484,7 @@ const incomeData = [
     "Top1": 276434
   },
   {
-    "Year": "1974 (16)(15)",
+    "Year": 1974,
     "Number": 71163,
     "Bottom20": 4860,
     "Bottom40": 9015,
@@ -506,7 +506,7 @@ const incomeData = [
     "Top1": 271820
   },
   {
-    "Year": "1972 (14)",
+    "Year": 1972,
     "Number": 68251,
     "Bottom20": 4050,
     "Bottom40": 7800,
@@ -517,7 +517,7 @@ const incomeData = [
     "Top1": 262554
   },
   {
-    "Year": "1971 (13)",
+    "Year": 1971,
     "Number": 66676,
     "Bottom20": 3800,
     "Bottom40": 7244,
@@ -561,7 +561,7 @@ const incomeData = [
     "Top1": 236114
   },
   {
-    "Year": "1967 (12)",
+    "Year": 1967,
     "Number": 60813,
     "Bottom20": 3000,
     "Bottom40": 5850,
@@ -571,235 +571,4 @@ const incomeData = [
     "TopPoint1": 512976,
     "Top1": 232812
   },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  },
-  {
-    "Year": "",
-    "Number": "",
-    "Bottom20": "",
-    "Bottom40": "",
-    "Top40": "",
-    "Top20": "",
-    "Top5": "",
-    "TopPoint1": "",
-    "Top1": ""
-  }
 ]
