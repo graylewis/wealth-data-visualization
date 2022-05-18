@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -45,6 +48,7 @@
     }
     .container {
         box-shadow: 2px 2px 16px rgba(0,0,0,.8);
+        margin-left: calc(50% - 650px);
     }
 
     .slider {
@@ -55,16 +59,43 @@
       transition-duration: .5s;
     }
 
+    .important-info {
+      position: absolute;
+      bottom: 40px;
+      font-family: arvo;
+      width: 80%;
+      left: 10%;
+    }
+    li {
+      font-family: 'Space Mono'
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
 
+      font: normal 12px 'arvo'
+    }
+    input[type="button"] {
+      font: normal 12px 'space mono'
+    }
   </style>
 
 </head>
 <body>
   <div style="left: 0; top: 100px;margin: 0; padding: 0;width: 100%; height: 100%; position: absolute;" class="zoomable"></div>
-  <div class="sliderText"></div>
-  <div class="slidecontainer">
-    <input type="range" min="1989" max="2021" step="1" class="slider" id="myRange">
+  <div class="controls">
+    <div class="sliderText"></div>
+    <div class="slidecontainer">
+      <input type="range" min="1989" max="2021" step="1" class="slider" id="myRange">
+    </div>
+    <div class="button-container">
+      <input name="hunger" type="button" class="solve-hunger" value="How has it changed since 1989?" onclick=walkthrough()>
+      <input name="zoom" type="button" class="solve-hunger" value="Zoom Walkthrough" onclick=zoomWalkthrough()>
+    </div>
+    </input>
   </div>
+
   <script src="./incomeData.js"></script>
 
   <script>
@@ -259,7 +290,7 @@
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .attr("class", "container")
-        .attr("style", "outline: 2px solid black; position: absolute; left: 50px; top: 50px;") 
+        .attr("style", "outline: 2px solid black; position: absolute; left: 0px; top: 10px;") 
         .call(
           zoom
       )
@@ -342,6 +373,13 @@
     // ???
     function walkthrough() {
       slider.value = 1989;
+      const svg = d3.select(".zoomable")
+
+      const transform = d3.zoomIdentity
+      transform.k = 4
+
+      svg 
+        .call(zoom.transform, transform)
       const interval = setInterval(() => {if (slider.value == 2021) {clearInterval(interval)} else { console.log(`LOOP: ${slider.value + 1}`);slider.value = parseInt(slider.value) + 1; updateData(slider.value) }}, 400)
     }
 
@@ -351,7 +389,7 @@
       console.log("HI")
 
       transform2 = d3.zoomIdentity
-      transform2.k = 0.00004
+      transform2.k = zoomLevel
 
       selection
         .transition()
@@ -368,7 +406,7 @@
       transform2.k = 300
 
       svg
-        .call(zoomTransition)
+        .call(zoomTransition, .0005)
       
     }
 
@@ -398,8 +436,6 @@
       createRectangle(data.bottom40/scaleFactor, 200, "The Average Income of the Bottom 40%", "#f48c06")
       createRectangle(data.bottom20/scaleFactor, 200, "The Average Income of the Bottom 20%", "#ffba08")
 
-
-
       if (transform) {
         zoomed({transform})
       }
@@ -428,8 +464,18 @@
     updateData(2003)
 
   </script>
-  <input name="hunger" type="button" class="solve-hunger" value="How has it changed since 1989?" onclick=walkthrough()>
-  <input name="zoom" type="button" class="solve-hunger" value="Zoom Walkthrough" onclick=zoomWalkthrough()>
-  </input>
+
+  <div class="important-info">
+    <h2 class="info-header">Important usage info</h2>
+
+    <ul>
+      <li>Keep your eye on the axis at the top! The leftmost side of the axis is always 0.</li>
+      <li>The "Zoom Walkthrough" button is an 80 second automated tour of the visualization. <b>It will not work properly unless you've fully zoomed into the graphic first due to a quirk of the browser API</b></li>
+      <li>The multiplier in the lower left of the visual represents the zoom level relative to the default view.</li>
+      <li>The visual can be explored by zooming. Zooming can be done using any typical zooming gesture, including scrolling, pinching, and double tapping.</li>
+      <li>Unfortunately the layout of this website makes it unusable on phones.</li>
+      <li>The "How has it changed since 1989" button will increment the year slider year by year to demonstrate the relative growth of each groups income.</li>
+    </ul>
+  </div>
 </body>
 </html>
