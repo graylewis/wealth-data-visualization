@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
   <style>
     .domain {
       color: white;
@@ -49,7 +51,7 @@
       width: 400px;
     }
     
-    .chart-rect, .chart-text, .rect-label, .rect-label-text {
+    .chart-rect, .chart-text, .rect-label, .rect-label-text, .info-point {
       transition-duration: .5s;
     }
 
@@ -108,7 +110,7 @@
     
     var margin = {top: 0, right: 0, bottom: 0, left: 0},
     width = 1300 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
+    height = 480 - margin.top - margin.bottom;
     let rectAmount = 0;
     let zoomAmount = 1;
 
@@ -134,6 +136,23 @@
       }
       return color;
       //return toReturn
+    }
+
+    function createInformationPoint(amountOfMoney, label) {
+      group.append('rect')
+        .attr("class", "info-point")
+        .attr("y", "0")
+        .style("fill", 'black')
+        .attr("data-amount", amountOfMoney)
+        .attr("width", "1.5px")
+        .attr("height", "400px")
+      group.append('text')
+        .attr("class", "info-point-label info-point")
+        .attr("y", height - 60)
+        .style("fill", "black")
+        .text(label)
+        .attr("data-amount", amountOfMoney)
+        .style("font", "normal 14px Arvo")
     }
 
     function createRectangle(rWidth, rHeight, label, color) {
@@ -202,6 +221,10 @@
       .domain([0, width])         // This is what is written on the Axis: from 0 to 100
       .range([0, width]);       // This is where the axis is placed: from 100px to 800px
 
+    const zoom = d3.zoom()
+      .on("zoom", zoomed)
+      .scaleExtent([.00001, 300])
+
     const svg = d3.select(".zoomable")
       .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -209,9 +232,7 @@
         .attr("class", "container")
         .attr("style", "outline: 2px solid black; position: absolute; left: 50px; top: 50px;") 
         .call(
-        d3.zoom()
-          .on("zoom", zoomed)
-          .scaleExtent([.00001, 300])
+          zoom
       )
 
     const group = svg.append("g")
@@ -263,6 +284,15 @@
           const translateLeft = (d3.select(this).attr("data-width")*transform.k)
             d3.select(this).style("transform", `translateX(${translateLeft - 3}px)`)
         })
+        d3.selectAll('.info-point').each(function() {
+          const translateLeft = (d3.select(this).attr("data-amount")*transform.k)
+            if (translateLeft < 200) {
+             d3.select(this).style("opacity", `0`)
+            } else { 
+             d3.select(this).style("opacity", `1`)
+            }
+            d3.select(this).style("transform", `translateX(${translateLeft - 3}px)`)
+        })
         svg.call(
             xAxis
         )
@@ -274,6 +304,34 @@
     function walkthrough() {
       slider.value = 1989;
       const interval = setInterval(() => {if (slider.value == 2021) {clearInterval(interval)} else { console.log(`LOOP: ${slider.value + 1}`);slider.value = parseInt(slider.value) + 1; updateData(slider.value) }}, 400)
+      zoomWalkthrough()
+    }
+
+    function zoomTransition(selection, zoomLevel) {
+      transform = d3.zoomTransform(svg);
+      console.log(transform)
+      console.log("HI")
+
+      transform2 = d3.zoomIdentity
+      transform2.k = 0.00004
+
+      selection
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(30000)
+        .call(zoom.transform, transform2)
+    }
+
+    function zoomWalkthrough() {
+      transform3 = d3.zoomIdentity
+      transform3.k = 300
+
+      transform2 = d3.zoomIdentity
+      transform2.k = 300
+
+      svg
+        .call(zoomTransition)
+      
     }
 
     function reDraw() {
@@ -281,31 +339,38 @@
       if (svg.select('.chart-rect').node()) {
         node = svg.select('.chart-rect').node()
         transform = d3.zoomTransform(node);
+      } else { 
+        transform = d3.zoomTransform(svg)
       }
      // console.log(svg.select('.chart-rect').node())
       svg.selectAll('.chart-rect').remove();
       svg.selectAll('.chart-text').remove();
       svg.selectAll('.rect-label').remove();
       svg.selectAll('.rect-label-text').remove();
+      svg.selectAll('.info-point').remove();
       createRectangle(265400000000/scaleFactor,  300, "Elon Musk's Net Worth in 2022", "#4895ef")
       createRectangle(data.topPoint1/scaleFactor,  300, "The Average Income of the Top .1%", "#3f37c9")
       createRectangle(data.top1/scaleFactor,  300, "The Average Income of the Top 1%", "#480ca8")
       createRectangle(data.bottom20/scaleFactor, 300, "The Average Income of the Bottom 20%", "#f72585")
 
+      createInformationPoint(45000000000/scaleFactor, "The amount of money required to solve world hunger for a year")
+      createInformationPoint(68808/scaleFactor, "The living wage in the US according to MIT")
+
       if (transform) {
-        console.log(transform.k)
         zoomed({transform})
       }
     }
-  
-    const zoomIndicator = svg.append("text")
-      .attr("fill", "white")
+    
+    const zoomIndicatorContainer = svg.append("g")
+    const zoomIndicator = zoomIndicatorContainer.append("text")
+      .attr("fill", "black")
       .text("1.000x")
       .style("text-align", "left")
-      .attr("x", "80px")
-      .attr("y", `${height - 44}`)
+      .attr("x", "20px")
+      .attr("y", `${height - 35}`)
       .attr("dy", ".35em")
-      .style("font-size", width/26)
+      .attr("text-anchor", "start")
+      .style("font-size", "30px")
 
     svg.call(
       xAxis
@@ -315,12 +380,8 @@
       createRightJustifiedRectangle(Math.sqrt(45000000000), Math.sqrt(45000000000), "Cost of solving world hunger", "#000000");
       console.log("Solved world hunger!")
     }
-  
-    createRectangle(265400000000/scaleFactor,  300, "Elon Musk's Net Worth in 2022", "#4895ef")
-    createRectangle(data.topPoint1/scaleFactor,  300, "The Average Income of the Top .1%", "#3f37c9")
-    createRectangle(data.top1/scaleFactor,  300, "The Average Income of the Top 1%", "#480ca8")
-    createRectangle(data.bottom20/scaleFactor, 300, "The Average Income of the Bottom 20%", "#f72585")
-    updateData(2001)
+
+    updateData(2003)
 
   </script>
   <input name="hunger" type="button" class="solve-hunger" value="How has it changed since 1989?" onclick=walkthrough()>
