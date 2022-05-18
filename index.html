@@ -76,6 +76,7 @@
     const currencyFormatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
+      maximumSignificantDigits: 6
     })
 
     const filterData = (toFilter, year) => {
@@ -147,14 +148,14 @@
     function createInformationPoint(amountOfMoney, label) {
       group.append('rect')
         .attr("class", "info-point")
-        .attr("y", "300")
+        .attr("y", "200")
         .style("fill", 'rgba(0,0,0,0.5)')
         .attr("data-amount", amountOfMoney)
         .attr("width", "2px")
         .attr("height", "100px")
       group.append('text')
         .attr("class", "info-point-label info-point")
-        .attr("y", height - 60)
+        .attr("y", 320)
         .style("width", '200px')
         .style("fill", "black")
         .text(label)
@@ -162,7 +163,7 @@
         .style("font", "normal 14px Arvo")
       group.append('rect')
         .attr("class", "info-point-label info-point info-point-money-rect")
-        .attr("y", height - 52)
+        .attr("y", 330)
         .style("width", '150px')
         .style("height", '25px')
         .style("rx", '15px')
@@ -173,7 +174,7 @@
         .style("font", "normal 14px Arvo")
       group.append('text')
         .attr("class", "info-point-label info-point info-point-money")
-        .attr("y", height - 35)
+        .attr("y", 348)
         .style("width", '200px')
         .style("fill", "white")
         .text(currencyFormatter.format(amountOfMoney*10000))
@@ -202,7 +203,7 @@
         .attr("y", rHeight+30 + 12*numberOfRects)
         .attr("data-width", rWidth)
         .style("fill", color)
-        .text(label)
+        .text(`${label} (${currencyFormatter.format(rWidth * scaleFactor)})`)
         .attr("text-anchor", "start")
         .style("font-size", "11px")
         .style("font-family", "Arvo")
@@ -275,14 +276,14 @@
       .axisBottom(x)
         .tickFormat(d => {
           let outputString = `$${d*scaleFactor}`
-          if (d.toString().length >= 5) {
-            outputString = `$${d/1000*scaleFactor}k`
-          }
-          if (d.toString().length >= 7) {
-            outputString = `$${d/1000000*scaleFactor}M`
-          }
-          if (d.toString().length >= 8) {
-            outputString = `$${d/1000000000*scaleFactor}B`
+          if (outputString.length >= 11) {
+            outputString = `$${Math.round(d/1000000000*scaleFactor)}B`
+          } else
+          if (outputString.length >= 8) {
+            outputString = `$${Math.round(d/1000000*scaleFactor)}M`
+          } else
+          if (outputString.length >= 6) {
+            outputString = `$${Math.round(d/1000*scaleFactor)}k`
           }
           return outputString
         })
@@ -354,8 +355,8 @@
 
       selection
         .transition()
-        .ease(d3.easeLinear)
-        .duration(60000)
+        .ease(d3.easeSinIn)
+        .duration(80000)
         .call(zoom.transform, transform2)
     }
 
@@ -388,11 +389,14 @@
       createInformationPoint(45000000000/scaleFactor, "The amount of money required to solve world hunger for a year")
       createInformationPoint(68808/scaleFactor, "The living wage in the US according to MIT")
       createInformationPoint(29927/scaleFactor, "The average student debt of 2020 graduates")
-      createRectangle(265400000000/scaleFactor,  300, "Elon Musk's Net Worth in 2022", "#370617")
-      createRectangle(data.topPoint1/scaleFactor,  300, "The Average Income of the Top .1%", "#9d0208")
-      createRectangle(data.top1/scaleFactor,  300, "The Average Income of the Top 1%", "#dc2f02")
-      createRectangle(data.bottom40/scaleFactor, 300, "The Average Income of the Bottom 40%", "#f48c06")
-      createRectangle(data.bottom20/scaleFactor, 300, "The Average Income of the Bottom 20%", "#ffba08")
+      createInformationPoint(233610/scaleFactor, "The average cost of raising a child to age 17")
+      createInformationPoint(2000000/scaleFactor, "The cost to educate 130 children in the US public system for a year")
+      createInformationPoint(20000000000/scaleFactor, "The estimated cost of solving homelessness nationally")
+      createRectangle(265400000000/scaleFactor,  200, "Elon Musk's Net Worth in 2022", "#370617")
+      createRectangle(data.topPoint1/scaleFactor,  200, "The Average Income of the Top .1%", "#9d0208")
+      createRectangle(data.top1/scaleFactor,  200, "The Average Income of the Top 1%", "#dc2f02")
+      createRectangle(data.bottom40/scaleFactor, 200, "The Average Income of the Bottom 40%", "#f48c06")
+      createRectangle(data.bottom20/scaleFactor, 200, "The Average Income of the Bottom 20%", "#ffba08")
 
 
 
