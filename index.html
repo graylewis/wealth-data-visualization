@@ -60,7 +60,7 @@
 
 </head>
 <body>
-  <div style="left: 0; top: 50px;margin: 0; padding: 0;width: 100%; height: 100%; position: absolute;" class="zoomable"></div>
+  <div style="left: 0; top: 100px;margin: 0; padding: 0;width: 100%; height: 100%; position: absolute;" class="zoomable"></div>
   <div class="sliderText"></div>
   <div class="slidecontainer">
     <input type="range" min="1989" max="2021" step="1" class="slider" id="myRange">
@@ -73,6 +73,11 @@
 
     let data = { elonMuskNetWorth: 265400000000 }
   
+    const currencyFormatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    })
+
     const filterData = (toFilter, year) => {
       return toFilter.filter((item, i) => {
         return (item["Year"] == year)
@@ -87,6 +92,7 @@
         data.top20 = filteredData[0]["Top20"]
         data.top5 = filteredData[0]["Top5"]
         data.bottom20 = filteredData[0]["Bottom20"]
+        data.bottom40 = filteredData[0]["Bottom40"]
         data.top1 = filteredData[0]["Top1"]
         data.topPoint1 = filteredData[0]["TopPoint1"]
         
@@ -141,18 +147,39 @@
     function createInformationPoint(amountOfMoney, label) {
       group.append('rect')
         .attr("class", "info-point")
-        .attr("y", "0")
-        .style("fill", 'black')
+        .attr("y", "300")
+        .style("fill", 'rgba(0,0,0,0.5)')
         .attr("data-amount", amountOfMoney)
-        .attr("width", "1.5px")
-        .attr("height", "400px")
+        .attr("width", "2px")
+        .attr("height", "100px")
       group.append('text')
         .attr("class", "info-point-label info-point")
         .attr("y", height - 60)
+        .style("width", '200px')
         .style("fill", "black")
         .text(label)
         .attr("data-amount", amountOfMoney)
         .style("font", "normal 14px Arvo")
+      group.append('rect')
+        .attr("class", "info-point-label info-point info-point-money-rect")
+        .attr("y", height - 52)
+        .style("width", '150px')
+        .style("height", '25px')
+        .style("rx", '15px')
+        .style("ry", '40px')
+        .style("fill", "#118C4F")
+        .text(currencyFormatter.format(amountOfMoney*10000))
+        .attr("data-amount", amountOfMoney)
+        .style("font", "normal 14px Arvo")
+      group.append('text')
+        .attr("class", "info-point-label info-point info-point-money")
+        .attr("y", height - 35)
+        .style("width", '200px')
+        .style("fill", "white")
+        .text(currencyFormatter.format(amountOfMoney*10000))
+        .attr("data-amount", amountOfMoney)
+        .style("font", "normal 14px Arvo")
+
     }
 
     function createRectangle(rWidth, rHeight, label, color) {
@@ -193,6 +220,7 @@
         .style("font-family", "Arvo")
         .style("font-style", "italic")
         .style("max-width", "300px")
+        .attr("text-anchor", "end")
         .attr("data-width", rWidth)
 
     }
@@ -267,7 +295,7 @@
         .domain([0, 1/transform.k * width])
         d3.selectAll('.chart-rect').attr("transform", `scale(${transform.k} 1)`)
         d3.selectAll('.chart-text').each(function() {
-          const translateLeft = (d3.select(this).attr("data-width")*transform.k)/2
+          const translateLeft = (d3.select(this).attr("data-width")*transform.k)-50
           
           if (translateLeft < 200) {
             d3.select(this).style("display", "none")
@@ -293,6 +321,16 @@
             }
             d3.select(this).style("transform", `translateX(${translateLeft - 3}px)`)
         })
+        d3.selectAll('.info-point-money-rect').each(function() {
+          const translateLeft = (d3.select(this).attr("data-amount")*transform.k)
+            if (translateLeft < 200) {
+             d3.select(this).style("opacity", `0`)
+            } else { 
+             d3.select(this).style("opacity", `1`)
+            }
+            d3.select(this).style("transform", `translateX(${translateLeft - 75}px)`)
+        })
+        
         svg.call(
             xAxis
         )
@@ -304,7 +342,6 @@
     function walkthrough() {
       slider.value = 1989;
       const interval = setInterval(() => {if (slider.value == 2021) {clearInterval(interval)} else { console.log(`LOOP: ${slider.value + 1}`);slider.value = parseInt(slider.value) + 1; updateData(slider.value) }}, 400)
-      zoomWalkthrough()
     }
 
     function zoomTransition(selection, zoomLevel) {
@@ -318,7 +355,7 @@
       selection
         .transition()
         .ease(d3.easeLinear)
-        .duration(30000)
+        .duration(60000)
         .call(zoom.transform, transform2)
     }
 
@@ -348,13 +385,16 @@
       svg.selectAll('.rect-label').remove();
       svg.selectAll('.rect-label-text').remove();
       svg.selectAll('.info-point').remove();
-      createRectangle(265400000000/scaleFactor,  300, "Elon Musk's Net Worth in 2022", "#4895ef")
-      createRectangle(data.topPoint1/scaleFactor,  300, "The Average Income of the Top .1%", "#3f37c9")
-      createRectangle(data.top1/scaleFactor,  300, "The Average Income of the Top 1%", "#480ca8")
-      createRectangle(data.bottom20/scaleFactor, 300, "The Average Income of the Bottom 20%", "#f72585")
-
       createInformationPoint(45000000000/scaleFactor, "The amount of money required to solve world hunger for a year")
       createInformationPoint(68808/scaleFactor, "The living wage in the US according to MIT")
+      createInformationPoint(29927/scaleFactor, "The average student debt of 2020 graduates")
+      createRectangle(265400000000/scaleFactor,  300, "Elon Musk's Net Worth in 2022", "#370617")
+      createRectangle(data.topPoint1/scaleFactor,  300, "The Average Income of the Top .1%", "#9d0208")
+      createRectangle(data.top1/scaleFactor,  300, "The Average Income of the Top 1%", "#dc2f02")
+      createRectangle(data.bottom40/scaleFactor, 300, "The Average Income of the Bottom 40%", "#f48c06")
+      createRectangle(data.bottom20/scaleFactor, 300, "The Average Income of the Bottom 20%", "#ffba08")
+
+
 
       if (transform) {
         zoomed({transform})
@@ -385,6 +425,7 @@
 
   </script>
   <input name="hunger" type="button" class="solve-hunger" value="How has it changed since 1989?" onclick=walkthrough()>
+  <input name="zoom" type="button" class="solve-hunger" value="Zoom Walkthrough" onclick=zoomWalkthrough()>
   </input>
 </body>
 </html>
